@@ -43,7 +43,7 @@ class SessionDiscovery:
     def discover_existing_sessions(self) -> Dict[str, DiscoveredSession]:
         """Immediate scan of existing Claude Code sessions on startup"""
         with self._lock:
-            discovered = {}
+            discovered: Dict[str, DiscoveredSession] = {}
             
             if not self.claude_base_path.exists():
                 print(f"Claude Code directory not found: {self.claude_base_path}")

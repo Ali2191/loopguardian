@@ -5,7 +5,7 @@ Desktop notification system for LoopGuard
 import subprocess
 import time
 import json
-from typing import Optional, Dict, List, Any
+from typing import Optional, Dict, List, Any, cast
 from pathlib import Path
 from datetime import datetime, timedelta
 from dataclasses import dataclass
@@ -140,7 +140,7 @@ class NotificationService:
         except Exception as e:
             print(f"Error processing queued notification: {e}")
     
-    def _check_snoozed_alerts(self):
+    def _check_snoozed_alerts(self) -> None:
         """Check if any snoozed alerts should be re-sent"""
         current_time = datetime.now()
         alerts_to_remove = []
@@ -192,10 +192,10 @@ class NotificationService:
         
         if self._quiet_hours_start <= self._quiet_hours_end:
             # Normal range (e.g., 22:00 to 07:00 doesn't cross midnight)
-            return self._quiet_hours_start <= current_hour <= self._quiet_hours_end
+            return cast(bool, self._quiet_hours_start <= current_hour <= self._quiet_hours_end)
         else:
             # Crosses midnight (e.g., 22:00 to 07:00)
-            return current_hour >= self._quiet_hours_start or current_hour <= self._quiet_hours_end
+            return cast(bool, current_hour >= self._quiet_hours_start or current_hour <= self._quiet_hours_end)
     
     def _is_throttled(self, alert: LoopAlert) -> bool:
         """Check if alert is throttled"""
@@ -218,11 +218,11 @@ class NotificationService:
             project_dir = str(Path(project_path).parent)
             custom_throttle = self.config.get_throttle_seconds(alert.severity, project_dir)
             if custom_throttle:
-                return custom_throttle
+                return cast(int, custom_throttle)
         
         # Use configuration-based throttling
         if self.config:
-            return self.config.get_throttle_seconds(alert.severity)
+            return cast(int, self.config.get_throttle_seconds(alert.severity))
         
         # Fallback to defaults
         base_throttle = {
