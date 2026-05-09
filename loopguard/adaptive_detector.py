@@ -196,7 +196,7 @@ class AdaptiveLoopDetector:
             
             return stats
     
-    def _init_default_profiles(self):
+    def _init_default_profiles(self) -> None:
         """Initialize default session type profiles"""
         self.session_profiles['debugging'] = SessionTypeProfile(
             session_type='debugging',

@@ -364,7 +364,7 @@ class SessionAnalytics:
                     indicators.append('Git commit made')
         return list(set(indicators))  # Remove duplicates
     
-    def _track_file_activities(self, session_id: str, events: List[LogEvent]):
+    def _track_file_activities(self, session_id: str, events: List[LogEvent]) -> None:
         """Track individual file activities for detailed analysis"""
         for event in events:
             if event.event_type == 'assistant':
@@ -491,7 +491,7 @@ class SessionAnalytics:
         raw_score = productive_score - loop_penalty - activity_penalty
         return max(0, min(100, raw_score))
     
-    def generate_session_summary(self, session_id: str) -> Optional[SessionSummary]:
+    def get_session_summary(self, session_id: str) -> Optional[SessionSummary]:
         """Generate end-of-session summary report"""
         metrics = self.get_session_metrics(session_id)
         if not metrics:
@@ -597,7 +597,7 @@ class SessionAnalytics:
         else:
             return "Limited progress due to repeated patterns"
     
-    def save_session_summary(self, summary: SessionSummary):
+    def save_session_summary(self, summary: SessionSummary) -> None:
         """Save session summary to database"""
         with sqlite3.connect(self.db_path) as conn:
             conn.execute("""
@@ -609,7 +609,7 @@ class SessionAnalytics:
             ))
             conn.commit()
     
-    def _store_alert(self, alert: LoopAlert):
+    def _store_alert(self, alert: LoopAlert) -> None:
         """Store alert in database"""
         with sqlite3.connect(self.db_path) as conn:
             conn.execute("""
