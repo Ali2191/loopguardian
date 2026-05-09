@@ -5,7 +5,7 @@ Process monitoring for Claude Code detection
 import psutil
 import time
 import threading
-from typing import Optional, Set, Dict, List
+from typing import Optional, Set, Dict, List, Any
 from dataclasses import dataclass, field
 from collections import defaultdict
 import os
@@ -136,7 +136,7 @@ class ProcessMonitor:
         with self._lock:
             return [s for s in self._sessions.values() if s.priority >= 2]
     
-    def update_session_priority(self, session_id: str, priority: int):
+    def update_session_priority(self, session_id: str, priority: int) -> None:
         """Update session priority for resource management"""
         with self._lock:
             for session in self._sessions.values():
@@ -162,7 +162,7 @@ class ProcessMonitor:
         cmd_str = ' '.join(cmdline)
         return hashlib.md5(f"{pid}{cmd_str}".encode()).hexdigest()[:12]
     
-    def _get_resource_usage(self, proc) -> Dict[str, float]:
+    def _get_resource_usage(self, proc: Any) -> Dict[str, float]:
         """Get resource usage for a process"""
         try:
             memory_info = proc.memory_info()
@@ -188,7 +188,7 @@ class ProcessMonitor:
         
         return 1  # Normal priority
     
-    def _apply_session_prioritization(self):
+    def _apply_session_prioritization(self) -> None:
         """Apply resource management when too many sessions"""
         sessions = sorted(self._sessions.values(), key=lambda s: s.priority)
         

@@ -5,7 +5,7 @@ Loop detection algorithms for Claude Code sessions
 import os
 from collections import defaultdict, deque
 from datetime import datetime, timedelta, timezone
-from typing import List, Dict, Optional, Set
+from typing import List, Dict, Optional, Set, Any
 from dataclasses import dataclass
 import hashlib
 
@@ -15,29 +15,19 @@ from .types import LoopAlert
 from .adaptive_detector import AdaptiveLoopDetector, SessionTypeProfile
 
 
-@dataclass
-class LoopAlert:
-    """Represents a detected loop"""
-    alert_type: str  # 'tool_call_loop', 'error_loop', 'stagnation'
-    session_id: str
-    description: str
-    severity: str  # 'low', 'medium', 'high'
-    timestamp: datetime
-    evidence: Dict[str, any]
-    suggested_action: str
 
 
 class LoopDetector:
     """Enhanced loop detector with adaptive threshold tuning"""
     
     def __init__(self, config: Config):
-        self.config = config
-        self.tool_call_history = defaultdict(lambda: deque(maxlen=50))
-        self.error_history = defaultdict(lambda: deque(maxlen=20))
-        self.file_activity = defaultdict(lambda: deque(maxlen=10))
-        self.session_activity = defaultdict(lambda: deque(maxlen=100))
-        self.last_alerts = {}  # For throttling
-        self.processed_events = set()  # Avoid duplicate processing
+        self.config: Config = config
+        self.tool_call_history: Dict[str, deque] = defaultdict(lambda: deque(maxlen=50))
+        self.error_history: Dict[str, deque] = defaultdict(lambda: deque(maxlen=20))
+        self.file_activity: Dict[str, deque] = defaultdict(lambda: deque(maxlen=10))
+        self.session_activity: Dict[str, deque] = defaultdict(lambda: deque(maxlen=100))
+        self.last_alerts: Dict[str, deque] = defaultdict(lambda: deque(maxlen=5))
+        self.processed_events: Set[str] = set()  # Avoid duplicate processing
         
         # Initialize adaptive detector
         self.adaptive_detector = AdaptiveLoopDetector(config)
@@ -45,7 +35,7 @@ class LoopDetector:
     
     def analyze_events(self, events: List[LogEvent]) -> List[LoopAlert]:
         """Analyze log events for loop patterns with adaptive detection"""
-        alerts = []
+        alerts: List[LoopAlert] = []
         
         for event in events:
             event_id = self._get_event_id(event)
@@ -78,7 +68,7 @@ class LoopDetector:
     
     def _detect_tool_call_loops(self, event: LogEvent) -> List[LoopAlert]:
         """Detect repeated tool calls with adaptive thresholds"""
-        alerts = []
+        alerts: List[LoopAlert] = []
         
         if not isinstance(event.content.get('content'), list):
             return alerts
@@ -130,7 +120,7 @@ class LoopDetector:
     
     def _detect_error_loops(self, event: LogEvent) -> List[LoopAlert]:
         """Detect repeated error messages with adaptive thresholds"""
-        alerts = []
+        alerts: List[LoopAlert] = []
         
         # Extract error messages from event content
         error_message = self._extract_error_message(event)
@@ -182,7 +172,7 @@ class LoopDetector:
     
     def _detect_stagnation(self, session_id: str) -> List[LoopAlert]:
         """Detect sessions with no meaningful progress using adaptive thresholds"""
-        alerts = []
+        alerts: List[LoopAlert] = []
         
         activity = self.session_activity[session_id]
         if not activity:
@@ -337,7 +327,7 @@ class LoopDetector:
         
         return filtered_alerts
     
-    def clear_session_history(self, session_id: str):
+    def clear_session_history(self, session_id: str) -> None:
         """Clear history for a session (when session ends)"""
         if session_id in self.tool_call_history:
             del self.tool_call_history[session_id]
@@ -348,18 +338,18 @@ class LoopDetector:
         if session_id in self.session_activity:
             del self.session_activity[session_id]
     
-    def provide_feedback(self, session_id: str, alert_id: str, was_correct: bool, feedback_type: str = "user"):
+    def provide_feedback(self, session_id: str, alert_id: str, was_correct: bool, feedback_type: str = "user") -> None:
         """Provide feedback for detected loops to improve adaptive accuracy"""
         if self.adaptive_mode:
             self.adaptive_detector.provide_feedback(session_id, alert_id, was_correct, feedback_type)
     
-    def get_adaptation_stats(self) -> Dict:
+    def get_adaptation_stats(self) -> Dict[str, Any]:
         """Get statistics about adaptive threshold tuning"""
         if self.adaptive_mode:
             return self.adaptive_detector.get_adaptation_stats()
         return {'adaptive_mode': False}
     
-    def toggle_adaptive_mode(self, enabled: bool):
+    def toggle_adaptive_mode(self, enabled: bool) -> None:
         """Toggle adaptive detection mode"""
         self.adaptive_mode = enabled
         print(f"🎯 Adaptive detection {'enabled' if enabled else 'disabled'}")

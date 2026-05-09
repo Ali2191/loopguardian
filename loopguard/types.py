@@ -17,6 +17,7 @@ class LoopAlert:
     severity: str  # 'low', 'medium', 'high', 'critical'
     suggested_action: str
     metadata: Dict[str, Any]
+    evidence: Dict[str, Any] = None  # Evidence supporting the alert
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert alert to dictionary"""
@@ -40,7 +41,8 @@ class LoopAlert:
             description=data['description'],
             severity=data['severity'],
             suggested_action=data['suggested_action'],
-            metadata=data['metadata']
+            metadata=data['metadata'],
+            evidence=data.get('evidence', {})
         )
 
 

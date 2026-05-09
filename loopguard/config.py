@@ -5,7 +5,7 @@ Configuration management for LoopGuard
 import json
 import os
 from pathlib import Path
-from typing import Dict, Any, Optional, Tuple, List
+from typing import Dict, Any, Optional, Tuple, List, cast
 from jsonschema import validate, ValidationError
 
 from .config_validator import UserFriendlyConfigValidator, ConfigValidationError
@@ -173,7 +173,7 @@ class Config:
                         if not is_valid:
                             config = self._merge_with_defaults(config)
                     
-                    return config
+                    return cast(Dict[str, Any], config)
             else:
                 self._save_default_config()
                 return DEFAULT_CONFIG.copy()
@@ -187,12 +187,12 @@ class Config:
             print("💡 Using default configuration.")
             return DEFAULT_CONFIG.copy()
     
-    def _save_default_config(self):
+    def _save_default_config(self) -> None:
         """Save default configuration to file"""
         with open(self.config_path, 'w') as f:
             json.dump(DEFAULT_CONFIG, f, indent=2)
     
-    def get(self, key_path: str, default=None):
+    def get(self, key_path: str, default: Any = None) -> Any:
         """Get configuration value by dot-separated path"""
         keys = key_path.split('.')
         value = self._config
@@ -205,7 +205,7 @@ class Config:
         
         return value
     
-    def set(self, key_path: str, value):
+    def set(self, key_path: str, value: Any) -> None:
         """Set configuration value by dot-separated path"""
         keys = key_path.split('.')
         config = self._config
@@ -219,12 +219,12 @@ class Config:
         # Set the final value
         config[keys[-1]] = value
     
-    def get_project_settings(self, project_path: str) -> dict:
+    def get_project_settings(self, project_path: str) -> Dict[str, Any]:
         """Get settings for a specific project"""
         project_settings = self.get('notifications.project_settings', {})
-        return project_settings.get(project_path, {})
+        return cast(Dict[str, Any], project_settings.get(project_path, {}))
     
-    def set_project_settings(self, project_path: str, settings: dict):
+    def set_project_settings(self, project_path: str, settings: Dict[str, Any]) -> None:
         """Set settings for a specific project"""
         project_settings = self.get('notifications.project_settings', {})
         project_settings[project_path] = settings
@@ -237,10 +237,10 @@ class Config:
         if project_path:
             project_settings = self.get_project_settings(project_path)
             if 'custom_throttle_seconds' in project_settings:
-                return project_settings['custom_throttle_seconds']
+                return cast(int, project_settings['custom_throttle_seconds'])
         
         # Use severity-based thresholds
-        return self.get(f'notifications.severity_thresholds.{severity}', 120)
+        return cast(int, self.get(f'notifications.severity_thresholds.{severity}', 120))
     
     def is_project_muted(self, project_path: str) -> bool:
         """Check if a project is muted"""
@@ -248,7 +248,7 @@ class Config:
             return False
         
         project_settings = self.get_project_settings(project_path)
-        return project_settings.get('muted', False)
+        return cast(bool, project_settings.get('muted', False))
     
     def get_severity_override(self, project_path: str) -> Optional[str]:
         """Get severity override for a project"""
@@ -256,7 +256,7 @@ class Config:
             return None
         
         project_settings = self.get_project_settings(project_path)
-        return project_settings.get('severity_override')
+        return cast(Optional[str], project_settings.get('severity_override'))
     
     def validate_current_config(self) -> Tuple[bool, List[ConfigValidationError]]:
         """Validate current configuration and return errors"""
@@ -267,7 +267,7 @@ class Config:
         is_valid, errors = self.validate_current_config()
         return self.validator.get_validation_summary(errors)
     
-    def interactive_setup(self):
+    def interactive_setup(self) -> None:
         """Run interactive configuration setup wizard"""
         print("🧙 Starting interactive configuration setup...\n")
         new_config = self.validator.interactive_setup_wizard()
@@ -279,7 +279,7 @@ class Config:
         """Merge invalid config with defaults, fixing problematic values"""
         merged = DEFAULT_CONFIG.copy()
         
-        def merge_recursive(default: dict, user: dict):
+        def merge_recursive(default: dict, user: dict) -> None:
             for key, value in user.items():
                 if key in default:
                     if isinstance(value, dict) and isinstance(default[key], dict):
@@ -304,7 +304,7 @@ class Config:
         merge_recursive(merged, config)
         return merged
     
-    def _set_nested_value(self, config: Dict, path: str, value: Any):
+    def _set_nested_value(self, config: Dict, path: str, value: Any) -> None:
         """Set nested value using dot notation"""
         keys = path.split('.')
         current = config
@@ -316,7 +316,7 @@ class Config:
         
         current[keys[-1]] = value
     
-    def _save_config(self):
+    def _save_config(self) -> None:
         """Save current configuration to file"""
         try:
             self.config_path.parent.mkdir(parents=True, exist_ok=True)
@@ -325,6 +325,6 @@ class Config:
         except Exception as e:
             print(f"Error saving config: {e}")
     
-    def reload(self):
+    def reload(self) -> None:
         """Reload configuration from file"""
         self._config = self._load_config()

@@ -34,13 +34,13 @@ class LogEvent:
 class LogParser:
     """Parses Claude Code JSONL session logs"""
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.claude_dir = Path.home() / ".claude"
         self.sessions_dir = self.claude_dir / "projects"
     
     def discover_session_files(self) -> Dict[str, Path]:
         """Discover all Claude Code session files"""
-        session_files = {}
+        session_files: Dict[str, Path] = {}
         
         if not self.sessions_dir.exists():
             return session_files

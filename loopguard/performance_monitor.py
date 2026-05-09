@@ -7,7 +7,7 @@ import threading
 import psutil
 import gc
 from pathlib import Path
-from typing import Dict, List, Optional, Callable
+from typing import Dict, List, Optional, Callable, Any
 from dataclasses import dataclass, field
 from collections import deque, defaultdict
 from datetime import datetime, timezone, timedelta
@@ -47,11 +47,11 @@ class BoundedCache:
     def __init__(self, max_size: int = 1000, cleanup_ratio: float = 0.8):
         self.max_size = max_size
         self.cleanup_ratio = cleanup_ratio
-        self.cache = {}
-        self.access_order = deque()
+        self.cache: Dict[str, Any] = {}
+        self.access_order: deque = deque()
         self._lock = threading.RLock()
     
-    def get(self, key: str) -> Optional[any]:
+    def get(self, key: str) -> Optional[Any]:
         with self._lock:
             if key in self.cache:
                 # Move to end (most recently used)
@@ -60,7 +60,7 @@ class BoundedCache:
                 return self.cache[key]
             return None
     
-    def put(self, key: str, value: any):
+    def put(self, key: str, value: Any) -> None:
         with self._lock:
             if key in self.cache:
                 self.access_order.remove(key)

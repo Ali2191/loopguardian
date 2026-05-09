@@ -4,7 +4,7 @@ User-friendly configuration validation with helpful error messages
 
 import json
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List, Tuple, Optional, Any, Callable
 from jsonschema import validate, ValidationError, Draft7Validator
 import os
 import re
@@ -45,7 +45,7 @@ class ConfigValidationError:
 class UserFriendlyConfigValidator:
     """Enhanced configuration validator with user-friendly error messages"""
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.documentation_base = "https://github.com/loopguard/loopguard/docs"
         self.common_errors = self._init_common_error_patterns()
         self.validators = self._init_custom_validators()
@@ -104,7 +104,7 @@ class UserFriendlyConfigValidator:
     
     def interactive_setup_wizard(self) -> Dict[str, Any]:
         """Guide user through interactive configuration setup"""
-        config = {}
+        config: Dict[str, Any] = {}
         
         print("🧙 LoopGuard Configuration Wizard")
         print("=" * 40)
@@ -542,7 +542,7 @@ class UserFriendlyConfigValidator:
             'schema_violation': 'Review configuration schema documentation'
         }
     
-    def _init_custom_validators(self) -> Dict[str, callable]:
+    def _init_custom_validators(self) -> Dict[str, Callable]:
         """Initialize custom validation functions"""
         return {
             'validate_threshold': lambda x: isinstance(x, int) and x > 0,
