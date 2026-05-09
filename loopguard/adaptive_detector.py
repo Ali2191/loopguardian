@@ -65,7 +65,7 @@ class SessionTypeProfile:
     confidence_threshold: float = 0.7
     adaptation_rate: float = 0.1
     
-    def adjust_thresholds(self, metrics: DetectionMetrics):
+    def adjust_thresholds(self, metrics: DetectionMetrics) -> None:
         """Adjust thresholds based on performance metrics"""
         # Adjust tool call threshold
         if metrics.false_positive_rate > 0.125:  # > 1 FP per 8 hours
@@ -136,7 +136,7 @@ class AdaptiveLoopDetector:
         
         return alerts
     
-    def provide_feedback(self, session_id: str, alert_id: str, was_correct: bool, feedback_type: str = "user"):
+    def provide_feedback(self, session_id: str, alert_id: str, was_correct: bool, feedback_type: str = "user") -> None:
         """Provide feedback for detected loops to improve accuracy"""
         with self._lock:
             timestamp = datetime.now(timezone.utc).isoformat()

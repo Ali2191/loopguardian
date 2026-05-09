@@ -5,7 +5,7 @@ Session analytics and efficiency scoring for LoopGuard
 import sqlite3
 import json
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, asdict
 from pathlib import Path
 import statistics
@@ -55,7 +55,7 @@ class SessionMetrics:
     stagnation_periods: int = 0
     progress_indicators: List[str] = None
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.progress_indicators is None:
             self.progress_indicators = []
         if self.efficiency_score is not None:
@@ -107,11 +107,11 @@ class SessionAnalytics:
         self.config = None  # Will be set by LoopGuardService
         self._init_database()
     
-    def set_config(self, config):
+    def set_config(self, config: Any) -> None:
         """Set configuration for analytics"""
         self.config = config
     
-    def _init_database(self):
+    def _init_database(self) -> None:
         """Initialize SQLite database for session analytics with enhanced schema"""
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         
@@ -181,7 +181,7 @@ class SessionAnalytics:
             
             conn.commit()
     
-    def start_session(self, session_id: str):
+    def start_session(self, session_id: str) -> None:
         """Start tracking a new session with enhanced metrics"""
         with sqlite3.connect(self.db_path) as conn:
             conn.execute("""
@@ -198,7 +198,7 @@ class SessionAnalytics:
             ))
             conn.commit()
     
-    def track_file_activity(self, session_id: str, file_path: str, operation_type: str):
+    def track_file_activity(self, session_id: str, file_path: str, operation_type: str) -> None:
         """Track file activity for a session"""
         with sqlite3.connect(self.db_path) as conn:
             conn.execute("""
@@ -212,7 +212,7 @@ class SessionAnalytics:
             ))
             conn.commit()
     
-    def update_session_state(self, session_id: str, state: SessionState):
+    def update_session_state(self, session_id: str, state: SessionState) -> None:
         """Update session state"""
         with sqlite3.connect(self.db_path) as conn:
             conn.execute("""
@@ -220,7 +220,7 @@ class SessionAnalytics:
             """, (state.value, session_id))
             conn.commit()
     
-    def update_session(self, session_id: str, events: List[LogEvent], alerts: List[LoopAlert]):
+    def update_session(self, session_id: str, events: List[LogEvent], alerts: List[LoopAlert]) -> None:
         """Update session metrics with enhanced efficiency calculation"""
         if not events:
             return
@@ -249,7 +249,10 @@ class SessionAnalytics:
         estimated_tokens = self._estimate_enhanced_token_usage(events)
         
         # Calculate duration
-        start_time = datetime.fromisoformat(events[0].timestamp.replace('Z', '+00:00'))
+        if isinstance(events[0].timestamp, str):
+            start_time = datetime.fromisoformat(events[0].timestamp.replace('Z', '+00:00'))
+        else:
+            start_time = events[0].timestamp
         end_time = datetime.now()
         duration_minutes = int((end_time - start_time).total_seconds() / 60)
         

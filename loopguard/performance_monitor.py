@@ -70,18 +70,18 @@ class BoundedCache:
             self.cache[key] = value
             self.access_order.append(key)
     
-    def remove(self, key: str):
+    def remove(self, key: str) -> None:
         with self._lock:
             if key in self.cache:
                 del self.cache[key]
                 self.access_order.remove(key)
     
-    def clear(self):
+    def clear(self) -> None:
         with self._lock:
             self.cache.clear()
             self.access_order.clear()
     
-    def _cleanup(self):
+    def _cleanup(self) -> None:
         """Remove least recently used items"""
         items_to_remove = int(self.max_size * (1 - self.cleanup_ratio))
         for _ in range(items_to_remove):
@@ -102,8 +102,8 @@ class PerformanceMonitor:
         self.config = config
         self.process = psutil.Process()
         self.monitoring_active = False
-        self.metrics_history = deque(maxlen=1000)  # Last 1000 data points
-        self.alerts_history = deque(maxlen=100)  # Last 100 alerts
+        self.metrics_history: deque = deque(maxlen=1000)  # Last 1000 data points
+        self.alerts_history: deque = deque(maxlen=100)  # Last 100 alerts
         
         # Performance targets from Week 3 plan
         self.targets = {
@@ -125,9 +125,9 @@ class PerformanceMonitor:
         self.gc_interval = 300  # GC every 5 minutes
         
         # Monitoring thread
-        self._monitor_thread = None
+        self._monitor_thread: Optional[threading.Thread] = None
         self._stop_event = threading.Event()
-        self._callbacks = defaultdict(list)
+        self._callbacks: Dict[str, List] = defaultdict(list)
         
         # Performance counters
         self.counters = {
@@ -138,7 +138,7 @@ class PerformanceMonitor:
             'optimizations_applied': 0
         }
     
-    def start_monitoring(self):
+    def start_monitoring(self) -> None:
         """Start performance monitoring in background thread"""
         if self.monitoring_active:
             return
@@ -152,7 +152,7 @@ class PerformanceMonitor:
         print("📊 Performance monitoring started")
         print(f"   Targets: <{self.targets['max_memory_mb']}MB memory, <{self.targets['max_cpu_percent']}% CPU")
     
-    def stop_monitoring(self):
+    def stop_monitoring(self) -> None:
         """Stop performance monitoring"""
         if not self.monitoring_active:
             return
@@ -165,7 +165,7 @@ class PerformanceMonitor:
         
         print("📊 Performance monitoring stopped")
     
-    def register_callback(self, event_type: str, callback: Callable):
+    def register_callback(self, event_type: str, callback: Callable) -> None:
         """Register callback for performance events"""
         self._callbacks[event_type].append(callback)
     
@@ -247,7 +247,7 @@ class PerformanceMonitor:
             'optimization_level': self.optimization_level
         }
     
-    def optimize_memory(self, aggressive: bool = False):
+    def optimize_memory(self, aggressive: bool = False) -> float:
         """Apply memory optimization techniques"""
         original_memory = self.get_current_metrics().memory_mb
         
@@ -340,13 +340,13 @@ class PerformanceMonitor:
         
         return alerts
     
-    def update_counters(self, **kwargs):
+    def update_counters(self, **kwargs: Any) -> None:
         """Update performance counters"""
         for key, value in kwargs.items():
             if key in self.counters:
                 self.counters[key] += value
     
-    def get_cache_stats(self) -> Dict:
+    def get_cache_stats(self) -> Dict[str, Any]:
         """Get cache statistics"""
         return {
             'session_cache': {
@@ -366,7 +366,7 @@ class PerformanceMonitor:
             }
         }
     
-    def _monitor_loop(self):
+    def _monitor_loop(self) -> None:
         """Main monitoring loop"""
         last_io_check = time.time()
         last_disk_io = 0
@@ -408,7 +408,7 @@ class PerformanceMonitor:
                         if a.timestamp.timestamp() > one_minute_ago]
         return len(recent_alerts)
     
-    def _trigger_callbacks(self, event_type: str, data: any):
+    def _trigger_callbacks(self, event_type: str, data: Any) -> None:
         """Trigger registered callbacks for event type"""
         for callback in self._callbacks.get(event_type, []):
             try:
@@ -416,7 +416,7 @@ class PerformanceMonitor:
             except Exception as e:
                 print(f"⚠️  Callback error for {event_type}: {e}")
     
-    def export_performance_data(self, file_path: str, hours: int = 24):
+    def export_performance_data(self, file_path: str, hours: int = 24) -> None:
         """Export performance data to JSON file"""
         cutoff_time = time.time() - (hours * 3600)
         recent_metrics = [m for m in self.metrics_history if m.timestamp > cutoff_time]

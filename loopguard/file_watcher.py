@@ -5,7 +5,7 @@ File watching service for Claude Code session logs
 import os
 import time
 from pathlib import Path
-from typing import Set, Callable, Optional, Dict
+from typing import Set, Callable, Optional, Dict, Any
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileModifiedEvent
 
@@ -108,6 +108,11 @@ class FileWatcher:
         self.session_discovery = SessionDiscovery()
         self.session_handlers: Dict[str, SessionFileHandler] = {}
         self._max_sessions = 50  # Limit concurrent session monitoring
+
+    @property
+    def is_watching(self) -> bool:
+        """Return True if the file watcher is currently running."""
+        return self.observer is not None and self.observer.is_alive()
     
     def start_watching(self):
         """Start watching Claude Code session directories with enhanced discovery"""

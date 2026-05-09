@@ -56,7 +56,7 @@ class NotificationQueue:
 class NotificationService:
     """Handles desktop notifications for LoopGuard"""
     
-    def __init__(self, enabled: bool = True, config=None):
+    def __init__(self, enabled: bool = True, config: Any = None):
         self.enabled = enabled
         self.config = config
         self._terminal_notifier_path = self._find_terminal_notifier()
@@ -66,14 +66,14 @@ class NotificationService:
         self._snoozed_alerts: Dict[str, datetime] = {}  # Snoozed alerts
         self._project_settings: Dict[str, Dict] = {}  # Per-project settings
         self._lock = threading.Lock()
-        self._worker_thread = None
+        self._worker_thread: Optional[threading.Thread] = None
         self._running = False
         
         # Initialize settings from config
         self._load_settings_from_config()
         self._start_worker_thread()
     
-    def _load_settings_from_config(self):
+    def _load_settings_from_config(self) -> None:
         """Load notification settings from configuration"""
         if not self.config:
             return
@@ -94,7 +94,7 @@ class NotificationService:
         project_settings = self.config.get('notifications.project_settings', {})
         self._project_settings = project_settings.copy()
     
-    def _start_worker_thread(self):
+    def _start_worker_thread(self) -> None:
         """Start the background worker thread for notification processing"""
         if not self._running:
             self._running = True
@@ -575,7 +575,7 @@ class NotificationService:
             print(f"Test notification failed: {e}")
             return False
     
-    def stop(self):
+    def stop(self) -> None:
         """Stop the notification worker thread"""
         self._running = False
         if self._worker_thread and self._worker_thread.is_alive():
