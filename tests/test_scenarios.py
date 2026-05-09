@@ -13,7 +13,7 @@ from unittest.mock import Mock, patch, MagicMock
 from loopguard.config import Config
 from loopguard.notifications import NotificationService, NotificationSeverity
 from loopguard.session_analytics import SessionAnalytics, SessionState, EfficiencyLevel
-from loopguard.error_handler import ErrorHandler, LoopGuardError, ErrorCategory
+from loopguard.error_handler import ErrorHandler, LoopGuardError, ErrorCategory, ErrorSeverity
 from loopguard.loop_detector import LoopDetector, LoopAlert
 
 
