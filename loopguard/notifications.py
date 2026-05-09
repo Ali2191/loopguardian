@@ -101,7 +101,7 @@ class NotificationService:
             self._worker_thread = threading.Thread(target=self._notification_worker, daemon=True)
             self._worker_thread.start()
     
-    def _notification_worker(self):
+    def _notification_worker(self) -> None:
         """Background worker to process notification queue"""
         while self._running:
             try:
@@ -120,7 +120,7 @@ class NotificationService:
             except Exception as e:
                 print(f"Notification worker error: {e}")
     
-    def _process_queued_notification(self, notification_data: Dict[str, Any]):
+    def _process_queued_notification(self, notification_data: Dict[str, Any]) -> None:
         """Process a notification from the queue"""
         try:
             alert = notification_data['alert']

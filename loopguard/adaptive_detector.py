@@ -313,7 +313,7 @@ class AdaptiveLoopDetector:
         
         return suggestions.get(session_type, {}).get(alert.alert_type, alert.suggested_action)
     
-    def _adapt_thresholds(self, session_id: str, metrics: DetectionMetrics):
+    def _adapt_thresholds(self, session_id: str, metrics: DetectionMetrics) -> None:
         """Adapt thresholds based on session metrics"""
         session_type = self.session_types.get(session_id, 'unknown')
         profile = self.session_profiles[session_type]
@@ -324,18 +324,6 @@ class AdaptiveLoopDetector:
         
         # Adapt thresholds based on performance
         profile.adjust_thresholds(metrics)
-        
-        print(f"🎯 Adapted thresholds for {session_type} session: "
-              f"tool_call={profile.tool_call_threshold:.1f}, "
-              f"error={profile.error_threshold:.1f}, "
-              f"stagnation={profile.stagnation_threshold:.1f}")
-    
-    def _load_historical_data(self):
-        """Load historical feedback and adaptation data"""
-        data_file = Path.home() / ".loopguard" / "adaptive_data.json"
-        
-        if not data_file.exists():
-            return
         
         try:
             with open(data_file, 'r') as f:
