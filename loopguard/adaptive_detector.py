@@ -325,6 +325,42 @@ class AdaptiveLoopDetector:
         # Adapt thresholds based on performance
         profile.adjust_thresholds(metrics)
         
+        # Save updated thresholds
+        self._save_historical_data()
+    
+    def _save_historical_data(self) -> None:
+        """Save historical adaptation data"""
+        data_file = Path.home() / ".loopguard" / "adaptive_data.json"
+        data_file.parent.mkdir(exist_ok=True)
+        
+        try:
+            data = {
+                'session_types': self.session_types,
+                'feedback_data': dict(self.feedback_data),
+                'session_profiles': {
+                    session_type: {
+                        'tool_call_threshold': profile.tool_call_threshold,
+                        'error_threshold': profile.error_threshold,
+                        'stagnation_threshold': profile.stagnation_threshold,
+                        'confidence_threshold': profile.confidence_threshold
+                    }
+                    for session_type, profile in self.session_profiles.items()
+                }
+            }
+            
+            with open(data_file, 'w') as f:
+                json.dump(data, f, indent=2)
+                
+        except IOError as e:
+            print(f"⚠️  Error saving historical data: {e}")
+    
+    def _load_historical_data(self) -> None:
+        """Load historical feedback and adaptation data"""
+        data_file = Path.home() / ".loopguard" / "adaptive_data.json"
+        
+        if not data_file.exists():
+            return
+        
         try:
             with open(data_file, 'r') as f:
                 data = json.load(f)
@@ -351,29 +387,6 @@ class AdaptiveLoopDetector:
         except (json.JSONDecodeError, IOError) as e:
             print(f"⚠️  Error loading historical data: {e}")
     
-    def _save_feedback_data(self):
+    def _save_feedback_data(self) -> None:
         """Save feedback and adaptation data"""
-        data_file = Path.home() / ".loopguard" / "adaptive_data.json"
-        data_file.parent.mkdir(exist_ok=True)
-        
-        try:
-            data = {
-                'session_types': self.session_types,
-                'feedback_data': dict(self.feedback_data),
-                'session_profiles': {
-                    session_type: {
-                        'tool_call_threshold': profile.tool_call_threshold,
-                        'error_threshold': profile.error_threshold,
-                        'stagnation_threshold': profile.stagnation_threshold,
-                        'confidence_threshold': profile.confidence_threshold
-                    }
-                    for session_type, profile in self.session_profiles.items()
-                },
-                'last_updated': datetime.now(timezone.utc).isoformat()
-            }
-            
-            with open(data_file, 'w') as f:
-                json.dump(data, f, indent=2)
-                
-        except IOError as e:
-            print(f"⚠️  Error saving adaptation data: {e}")
+        self._save_historical_data()
