@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.loopguard.agent</string>
+    
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/loopguard</string>
+        <string>monitor</string>
+        <string>--daemon</string>
+        <string>--config</string>
+        <string>~/.loopguard/config.yaml</string>
+    </array>
+    
+    <key>WorkingDirectory</key>
+    <string>~/</string>
+    
+    <key>RunAtLoad</key>
+    <true/>
+    
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+        <key>NetworkState</key>
+        <true/>
+    </dict>
+    
+    <key>StandardOutPath</key>
+    <string>~/.loopguard/logs/loopguard.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>~/.loopguard/logs/loopguard.error.log</string>
+    
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PYTHONPATH</key>
+        <string>/usr/local/lib/python3/site-packages</string>
+        <key>LOOPGUARD_HOME</key>
+        <string>~/.loopguard</string>
+    </dict>
+    
+    <key>StartInterval</key>
+    <integer>300</integer>
+    
+    <key>HardResourceLimits</key>
+    <dict>
+        <key>NumberOfFiles</key>
+        <integer>1024</integer>
+        <key>Memory</key>
+        <integer>134217728</integer>
+    </dict>
+    
+    <key>SoftResourceLimits</key>
+    <dict>
+        <key>NumberOfFiles</key>
+        <integer>512</integer>
+        <key>Memory</key>
+        <integer>67108864</integer>
+    </dict>
+    
+    <key>ProcessType</key>
+    <string>Background</string>
+    
+    <key>EnableTransactions</key>
+    <false/>
+    
+    <key>LaunchOnlyOnce</key>
+    <false/>
+    
+    <key>AbandonProcessGroup</key>
+    <true/>
+</dict>
+</plist>
