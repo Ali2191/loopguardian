@@ -20,7 +20,7 @@ from .session_discovery import SessionDiscovery
 class FirstRunWizard:
     """Enhanced first run wizard with Claude Code auto-discovery"""
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.config_path = Path.home() / ".loopguard" / "config" / "config.yaml"
         self.session_discovery = SessionDiscovery()
         self.notification_service = NotificationService()
@@ -62,7 +62,7 @@ class FirstRunWizard:
             click.echo(f"\n❌ Setup failed: {e}")
             return False
     
-    def _print_welcome(self):
+    def _print_welcome(self) -> None:
         """Print welcome message"""
         click.echo("=" * 60)
         click.echo("🛡️  Welcome to LoopGuard - First Run Setup")
@@ -155,7 +155,7 @@ class FirstRunWizard:
             click.echo("⚠️  Some requirements not met, but you can continue")
             return click.confirm("Continue with setup anyway?", default=True)
     
-    def _discover_claude_code(self):
+    def _discover_claude_code(self) -> None:
         """Auto-discover Claude Code installations"""
         click.echo("🔍 Discovering Claude Code installation...")
         
@@ -284,7 +284,7 @@ class FirstRunWizard:
         click.echo("   ⚠️  Using default path - you can change this later")
         return "/Applications/Claude.app"
     
-    def _check_claude_running(self):
+    def _check_claude_running(self) -> None:
         """Check if Claude Code is currently running"""
         try:
             result = subprocess.run(['pgrep', '-f', 'Claude'], capture_output=True, text=True)
@@ -299,7 +299,7 @@ class FirstRunWizard:
             click.echo("   ❓ Could not check if Claude Code is running")
             self.setup_data['claude_running'] = None
     
-    def _setup_configuration(self):
+    def _setup_configuration(self) -> None:
         """Setup configuration with user preferences"""
         click.echo()
         click.echo("⚙️  Configuration Setup")
@@ -367,7 +367,7 @@ class FirstRunWizard:
                 patterns = [p.strip() for p in custom_patterns.split(',')]
                 self.setup_data['file_patterns'] = patterns
     
-    def _setup_notifications(self):
+    def _setup_notifications(self) -> None:
         """Setup notification preferences"""
         click.echo()
         click.echo("🔔 Notification Setup")
@@ -407,7 +407,7 @@ class FirstRunWizard:
         except:
             return False
     
-    def _test_notifications(self):
+    def _test_notifications(self) -> None:
         """Test notification system"""
         click.echo("   🧪 Testing notifications...")
         
@@ -426,7 +426,7 @@ class FirstRunWizard:
         except Exception as e:
             click.echo(f"   ❌ Test failed: {e}")
     
-    def _setup_monitoring(self):
+    def _setup_monitoring(self) -> None:
         """Setup monitoring preferences"""
         click.echo()
         click.echo("👁️  Monitoring Setup")
@@ -447,7 +447,7 @@ class FirstRunWizard:
         if perf_monitoring:
             click.echo("   This will track resource usage and optimize performance")
     
-    def _run_tutorial(self):
+    def _run_tutorial(self) -> None:
         """Run interactive tutorial"""
         click.echo()
         click.echo("📚 Quick Tutorial")
@@ -496,7 +496,7 @@ class FirstRunWizard:
         click.echo()
         click.echo("✅ Tutorial complete! You're ready to use LoopGuard.")
     
-    def _complete_setup(self):
+    def _complete_setup(self) -> None:
         """Complete the setup process"""
         click.echo()
         click.echo("🎯 Finalizing Setup")
@@ -515,7 +515,7 @@ class FirstRunWizard:
         # Next steps
         self._show_next_steps()
     
-    def _create_config_file(self):
+    def _create_config_file(self) -> None:
         """Create the configuration file"""
         config_dir = self.config_path.parent
         config_dir.mkdir(parents=True, exist_ok=True)
@@ -563,7 +563,7 @@ class FirstRunWizard:
             click.echo(f"   ✅ Configuration saved to {json_path}")
             self.config_path = json_path
     
-    def _setup_autostart(self):
+    def _setup_autostart(self) -> None:
         """Setup automatic startup"""
         try:
             plist_content = f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -628,7 +628,7 @@ class FirstRunWizard:
             click.echo(f"   ⚠️  Auto-start setup failed: {e}")
             click.echo("      You can enable it manually with: launchctl load ~/Library/LaunchAgents/com.loopguard.agent.plist")
     
-    def _show_setup_summary(self):
+    def _show_setup_summary(self) -> None:
         """Show setup summary"""
         click.echo()
         click.echo("📋 Setup Summary")
@@ -655,7 +655,7 @@ class FirstRunWizard:
         else:
             return "Low"
     
-    def _show_next_steps(self):
+    def _show_next_steps(self) -> None:
         """Show next steps"""
         click.echo()
         click.echo("🚀 Next Steps")
@@ -684,7 +684,7 @@ class FirstRunWizard:
         click.echo("Need help? Visit: https://loopguard.readthedocs.io/")
 
 
-def run_first_time_wizard():
+def run_first_time_wizard() -> bool:
     """Run the first-time setup wizard"""
     wizard = FirstRunWizard()
     return wizard.run_wizard()

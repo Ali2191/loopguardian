@@ -22,7 +22,7 @@ class SessionFileHandler(FileSystemEventHandler):
         self.log_parser = LogParser()
         self._file_positions = {}  # Track file positions for incremental reading
     
-    def on_modified(self, event):
+    def on_modified(self, event: Any) -> None:
         """Handle file modification events"""
         if event.is_directory:
             return
@@ -114,7 +114,7 @@ class FileWatcher:
         """Return True if the file watcher is currently running."""
         return self.observer is not None and self.observer.is_alive()
     
-    def start_watching(self):
+    def start_watching(self) -> bool:
         """Start watching Claude Code session directories with enhanced discovery"""
         claude_dir = Path.home() / ".claude" / "projects"
         
@@ -148,13 +148,13 @@ class FileWatcher:
         
         return True
     
-    def stop_watching(self):
+    def stop_watching(self) -> None:
         """Stop watching files"""
         if self.observer:
             self.observer.stop()
             self.observer.join()
     
-    def _on_new_events(self, session_id: str, events: list[LogEvent]):
+    def _on_new_events(self, session_id: str, events: list[LogEvent]) -> None:
         """Handle new log events with session management"""
         # Check session limit
         if len(self.watched_sessions) >= self._max_sessions and session_id not in self.watched_sessions:
@@ -172,7 +172,7 @@ class FileWatcher:
         for alert in alerts:
             self.alert_callback(alert)
     
-    def _process_discovered_sessions(self, discovered_sessions: Dict[str, DiscoveredSession]):
+    def _process_discovered_sessions(self, discovered_sessions: Dict[str, DiscoveredSession]) -> None:
         """Process sessions discovered during startup"""
         for session_id, discovered_session in discovered_sessions.items():
             print(f"Processing discovered session: {session_id} (Project: {discovered_session.project_id})")
@@ -192,7 +192,7 @@ class FileWatcher:
             except Exception as e:
                 print(f"Error processing discovered session {session_id}: {e}")
     
-    def continuous_discovery_update(self):
+    def continuous_discovery_update(self) -> None:
         """Update with continuous discovery integration"""
         new_sessions = self.session_discovery.continuous_discovery()
         
@@ -208,7 +208,7 @@ class FileWatcher:
             except Exception as e:
                 print(f"Error processing new session {session.session_id}: {e}")
     
-    def synchronize_with_processes(self, process_session_map: Dict[str, any]):
+    def synchronize_with_processes(self, process_session_map: Dict[str, Any]) -> None:
         """Synchronize discovered sessions with active processes"""
         active_discovered = self.session_discovery.synchronize_with_processes(list(process_session_map.values()))
         
@@ -231,7 +231,7 @@ class FileWatcher:
         """Check if a session is being monitored"""
         return session_id in self.watched_sessions
     
-    def remove_session(self, session_id: str):
+    def remove_session(self, session_id: str) -> None:
         """Remove a session from monitoring"""
         if session_id in self.watched_sessions:
             self.watched_sessions.remove(session_id)

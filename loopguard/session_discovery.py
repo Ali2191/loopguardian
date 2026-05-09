@@ -285,7 +285,7 @@ class SessionDiscovery:
         data = f"{process.pid}_{process.start_time}_{process.cmdline}"
         return hashlib.md5(data.encode()).hexdigest()[:12]
     
-    def _update_project_mappings(self):
+    def _update_project_mappings(self) -> None:
         """Update project to session mappings"""
         self.project_sessions.clear()
         

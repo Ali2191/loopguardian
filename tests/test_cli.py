@@ -14,23 +14,23 @@ from loopguard.cli import cli, LoopGuardService
 class TestCLI:
     """Test CLI commands and functionality"""
     
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Setup test environment"""
         self.runner = CliRunner()
     
-    def test_cli_help(self):
+    def test_cli_help(self) -> None:
         """Test CLI help command"""
         result = self.runner.invoke(cli, ['--help'])
         assert result.exit_code == 0
         assert 'LoopGuard' in result.output
     
-    def test_cli_version(self):
+    def test_cli_version(self) -> None:
         """Test CLI version option"""
         result = self.runner.invoke(cli, ['--version'])
         # Should not fail (version might not be implemented yet)
         assert result.exit_code in [0, 1]
     
-    def test_start_command(self):
+    def test_start_command(self) -> None:
         """Test start command"""
         with patch('loopguard.cli.LoopGuardService') as mock_service_class:
             mock_service = Mock()
@@ -41,7 +41,7 @@ class TestCLI:
             assert result.exit_code == 0
             mock_service.start.assert_called_once()
     
-    def test_status_command(self):
+    def test_status_command(self) -> None:
         """Test status command"""
         with patch('loopguard.cli.LoopGuardService') as mock_service_class:
             mock_service = Mock()
@@ -52,7 +52,7 @@ class TestCLI:
             assert result.exit_code == 0
             mock_service.status.assert_called_once()
     
-    def test_analytics_command(self):
+    def test_analytics_command(self) -> None:
         """Test analytics command"""
         with patch('loopguard.cli.LoopGuardService') as mock_service_class:
             mock_service = Mock()
@@ -71,7 +71,7 @@ class TestCLI:
             mock_service.session_analytics.get_recent_sessions.assert_called_once()
             mock_service.session_analytics.get_efficiency_summary.assert_called_once()
     
-    def test_setup_command(self):
+    def test_setup_command(self) -> None:
         """Test setup command"""
         with patch('loopguard.cli.LoopGuardService') as mock_service_class:
             mock_service = Mock()
@@ -83,7 +83,7 @@ class TestCLI:
             # Service should be created with interactive_setup=True
             mock_service_class.assert_called_once()
     
-    def test_validate_command_valid(self):
+    def test_validate_command_valid(self) -> None:
         """Test validate command with valid config"""
         with patch('loopguard.cli.LoopGuardService') as mock_service_class:
             mock_service = Mock()
@@ -95,7 +95,7 @@ class TestCLI:
             assert result.exit_code == 0
             assert 'valid' in result.output.lower()
     
-    def test_validate_command_invalid(self):
+    def test_validate_command_invalid(self) -> None:
         """Test validate command with invalid config"""
         with patch('loopguard.cli.LoopGuardService') as mock_service_class:
             mock_service = Mock()
@@ -108,7 +108,7 @@ class TestCLI:
             assert result.exit_code == 0
             assert 'Validation failed' in result.output
     
-    def test_performance_command(self):
+    def test_performance_command(self) -> None:
         """Test performance command"""
         with patch('loopguard.cli.LoopGuardService') as mock_service_class:
             mock_service = Mock()
@@ -125,7 +125,7 @@ class TestCLI:
             assert result.exit_code == 0
             mock_service.performance_monitor.get_performance_summary.assert_called_once()
     
-    def test_export_command(self):
+    def test_export_command(self) -> None:
         """Test export command"""
         with patch('loopguard.cli.LoopGuardService') as mock_service_class:
             mock_service = Mock()
@@ -139,7 +139,7 @@ class TestCLI:
                 assert result.exit_code == 0
                 mock_service.performance_monitor.export_performance_data.assert_called_once()
     
-    def test_adapt_command(self):
+    def test_adapt_command(self) -> None:
         """Test adapt command"""
         with patch('loopguard.cli.LoopGuardService') as mock_service_class:
             mock_service = Mock()
@@ -157,7 +157,7 @@ class TestCLI:
             assert result.exit_code == 0
             mock_service.loop_detector.get_adaptation_stats.assert_called_once()
     
-    def test_feedback_command(self):
+    def test_feedback_command(self) -> None:
         """Test feedback command"""
         with patch('loopguard.cli.LoopGuardService') as mock_service_class:
             mock_service = Mock()
@@ -173,7 +173,7 @@ class TestCLI:
             assert result.exit_code == 0
             mock_service.loop_detector.provide_feedback.assert_called_once()
     
-    def test_feedback_command_missing_args(self):
+    def test_feedback_command_missing_args(self) -> None:
         """Test feedback command with missing arguments"""
         result = self.runner.invoke(cli, ['feedback'])
         
@@ -184,7 +184,7 @@ class TestCLI:
 class TestLoopGuardService:
     """Test LoopGuardService class"""
     
-    def test_service_initialization(self):
+    def test_service_initialization(self) -> None:
         """Test service initialization"""
         service = LoopGuardService()
         
@@ -194,7 +194,7 @@ class TestLoopGuardService:
         assert service.notification_service is not None
         assert service.running is False
     
-    def test_service_initialization_with_config(self):
+    def test_service_initialization_with_config(self) -> None:
         """Test service initialization with custom config"""
         with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
             config_path = f.name
@@ -205,7 +205,7 @@ class TestLoopGuardService:
         finally:
             Path(config_path).unlink(missing_ok=True)
     
-    def test_get_health_status(self):
+    def test_get_health_status(self) -> None:
         """Test health status retrieval"""
         service = LoopGuardService()
         
@@ -216,7 +216,7 @@ class TestLoopGuardService:
         assert 'components' in health
         assert 'week3_features' in health
     
-    def test_signal_handler(self):
+    def test_signal_handler(self) -> None:
         """Test signal handler"""
         service = LoopGuardService()
         
@@ -225,7 +225,7 @@ class TestLoopGuardService:
             
             mock_exit.assert_called_once_with(0)
     
-    def test_on_alert(self):
+    def test_on_alert(self) -> None:
         """Test alert handling"""
         service = LoopGuardService()
         
@@ -247,7 +247,7 @@ class TestLoopGuardService:
         # Verify alert was stored
         service.session_analytics._store_alert.assert_called_once_with(mock_alert)
     
-    def test_enter_safe_mode(self):
+    def test_enter_safe_mode(self) -> None:
         """Test entering safe mode"""
         service = LoopGuardService()
         
@@ -261,7 +261,7 @@ class TestLoopGuardService:
         service.file_watcher.stop_watching.assert_called_once()
         assert service.notification_service.enabled is False
     
-    def test_get_uptime_minutes(self):
+    def test_get_uptime_minutes(self) -> None:
         """Test uptime calculation"""
         service = LoopGuardService()
         
@@ -274,7 +274,7 @@ class TestLoopGuardService:
 class TestCLIIntegration:
     """Integration tests for CLI"""
     
-    def test_cli_with_config_file(self):
+    def test_cli_with_config_file(self) -> None:
         """Test CLI with custom config file"""
         with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
             config_path = f.name
@@ -292,7 +292,7 @@ class TestCLIIntegration:
         finally:
             Path(config_path).unlink(missing_ok=True)
     
-    def test_cli_error_handling(self):
+    def test_cli_error_handling(self) -> None:
         """Test CLI error handling"""
         with patch('loopguard.cli.LoopGuardService') as mock_service_class:
             mock_service_class.side_effect = Exception("Test error")
@@ -302,7 +302,7 @@ class TestCLIIntegration:
             # Should handle error gracefully
             assert result.exit_code != 0 or 'error' in result.output.lower()
     
-    def test_start_stop_lifecycle(self):
+    def test_start_stop_lifecycle(self) -> None:
         """Test complete start/stop lifecycle"""
         with patch('loopguard.cli.LoopGuardService') as mock_service_class:
             mock_service = Mock()

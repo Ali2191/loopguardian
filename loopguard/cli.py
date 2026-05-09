@@ -6,6 +6,7 @@ import sys
 import signal
 import time
 import threading
+from typing import Any, Dict
 from pathlib import Path
 
 import click
@@ -49,7 +50,7 @@ class LoopGuardService:
         self.monitor_thread = None
         self._last_discovery_update = 0
     
-    def _on_alert(self, alert):
+    def _on_alert(self, alert: Any) -> None:
         """Handle loop detection alerts with error handling"""
         try:
             print(f"\n🚨 LOOP DETECTED: {alert.description}")
@@ -72,7 +73,7 @@ class LoopGuardService:
                 'session_id': alert.session_id
             })
     
-    def start(self):
+    def start(self) -> bool:
         """Start enhanced LoopGuard service with Week 3 features"""
         try:
             print("🔍 Starting LoopGuard with enhanced features...")
@@ -148,6 +149,7 @@ class LoopGuardService:
                 pass
             
             self.stop()
+            return True
             
         except Exception as e:
             # Critical startup error
@@ -159,7 +161,7 @@ class LoopGuardService:
             print("❌ Critical startup error - LoopGuard cannot start")
             return False
     
-    def stop(self):
+    def stop(self) -> None:
         """Stop enhanced LoopGuard service with graceful shutdown"""
         try:
             print("\n🛑 Stopping LoopGuard...")
@@ -217,7 +219,7 @@ class LoopGuardService:
             })
             print("⚠️  LoopGuard stopped with errors")
     
-    def _enhanced_monitor_loop(self):
+    def _enhanced_monitor_loop(self) -> None:
         """Enhanced monitoring loop with Week 3 features"""
         consecutive_errors = 0
         max_consecutive_errors = 5
@@ -290,7 +292,7 @@ class LoopGuardService:
                 # Wait longer after errors
                 time.sleep(min(10, 2 * consecutive_errors))
     
-    def _enter_safe_mode(self):
+    def _enter_safe_mode(self) -> None:
         """Enter safe mode with minimal functionality"""
         print("🛡️  Entering safe mode - minimal monitoring active")
         
@@ -306,7 +308,7 @@ class LoopGuardService:
                 'component': 'system'
             })
     
-    def get_health_status(self):
+    def get_health_status(self) -> Dict[str, Any]:
         """Get comprehensive system health status with Week 3 features"""
         try:
             # Get error handler health
@@ -406,13 +408,13 @@ class LoopGuardService:
         # For now, return a placeholder
         return 0
     
-    def _signal_handler(self, signum, frame):
+    def _signal_handler(self, signum: Any, frame: Any) -> None:
         """Handle shutdown signals"""
         print(f"\nReceived signal {signum}")
         self.stop()
         sys.exit(0)
     
-    def status(self):
+    def status(self) -> None:
         """Show enhanced LoopGuard status with health information"""
         try:
             health_status = self.get_health_status()
@@ -470,7 +472,7 @@ class LoopGuardService:
 @click.group()
 @click.option('--config', '-c', help='Path to configuration file')
 @click.pass_context
-def cli(ctx, config):
+def cli(ctx: Any, config: Any) -> None:
     """LoopGuard - Real-time AI coding agent loop detector"""
     ctx.ensure_object(dict)
     ctx.obj['config_path'] = config
@@ -478,7 +480,7 @@ def cli(ctx, config):
 
 @cli.command()
 @click.pass_context
-def start(ctx):
+def start(ctx: Any) -> None:
     """Start LoopGuard service"""
     service = LoopGuardService(ctx.obj.get('config_path'))
     service.start()
@@ -486,7 +488,7 @@ def start(ctx):
 
 @cli.command()
 @click.pass_context  
-def status(ctx):
+def status(ctx: Any) -> None:
     """Show LoopGuard status"""
     service = LoopGuardService(ctx.obj.get('config_path'))
     service.status()
@@ -494,7 +496,7 @@ def status(ctx):
 
 @cli.command()
 @click.pass_context
-def analytics(ctx):
+def analytics(ctx: Any) -> None:
     """Show session analytics and efficiency reports"""
     service = LoopGuardService(ctx.obj.get('config_path'))
     
@@ -532,7 +534,7 @@ def analytics(ctx):
 
 @cli.command()
 @click.pass_context
-def setup(ctx):
+def setup(ctx: Any) -> None:
     """Run interactive configuration setup wizard"""
     service = LoopGuardService(ctx.obj.get('config_path'), interactive_setup=True)
 
@@ -540,7 +542,7 @@ def setup(ctx):
 
 @cli.command()
 @click.pass_context
-def validate(ctx):
+def validate(ctx: Any) -> None:
     """Validate current configuration with user-friendly error messages"""
     service = LoopGuardService(ctx.obj.get('config_path'))
     
@@ -559,7 +561,7 @@ def validate(ctx):
 
 @cli.command()
 @click.pass_context
-def performance(ctx):
+def performance(ctx: Any) -> None:
     """Show performance monitoring statistics"""
     service = LoopGuardService(ctx.obj.get('config_path'))
     
@@ -607,7 +609,7 @@ def performance(ctx):
 @click.option('--minutes', default=60, help='Minutes of performance data to export')
 @click.option('--output', '-o', help='Output file path')
 @click.pass_context
-def export(ctx, minutes, output):
+def export(ctx: Any, minutes: Any, output: Any) -> None:
     """Export performance data to JSON file"""
     service = LoopGuardService(ctx.obj.get('config_path'))
     
@@ -623,7 +625,7 @@ def export(ctx, minutes, output):
 
 @cli.command()
 @click.pass_context
-def adapt(ctx):
+def adapt(ctx: Any) -> None:
     """Show adaptive detection statistics and controls"""
     service = LoopGuardService(ctx.obj.get('config_path'))
     
@@ -660,7 +662,7 @@ def adapt(ctx):
 @click.option('--alert-id', help='Alert ID to provide feedback for')
 @click.option('--correct/--incorrect', default=True, help='Was the alert correct?')
 @click.pass_context
-def feedback(ctx, session_id, alert_id, correct):
+def feedback(ctx: Any, session_id: Any, alert_id: Any, correct: Any) -> None:
     """Provide feedback for loop detection to improve accuracy"""
     service = LoopGuardService(ctx.obj.get('config_path'))
     
@@ -681,7 +683,7 @@ def feedback(ctx, session_id, alert_id, correct):
     print("This will help improve adaptive detection accuracy.")
 
 
-def main():
+def main() -> None:
     """Main entry point"""
     cli()
 

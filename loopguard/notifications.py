@@ -251,42 +251,7 @@ class NotificationService:
         
         return False
     
-    def _should_send_notification(self, alert: LoopAlert) -> bool:
-        """Check if notification should be sent based on various conditions"""
-        if not self.enabled or not self._terminal_notifier_path:
-            return False
-        
-        current_time = datetime.now()
-        
-        # Check quiet hours
-        if self._is_quiet_hours():
-            return False
-        
-        # Check if snoozed
-        alert_key = f"{alert.session_id}:{alert.alert_type}"
-        if alert_key in self._snoozed_alerts:
-            return False
-        
-        # Check throttling
-        if self._is_throttled(alert):
-            return False
-        
-        # Check project-specific settings
-        project_path = alert.evidence.get('file_path', '')
-        if self._is_project_muted(project_path):
-            return False
-        
-        # Check severity override
-        if self.config and project_path:
-            project_dir = str(Path(project_path).parent)
-            severity_override = self.config.get_severity_override(project_dir)
-            if severity_override:
-                # Apply severity override logic here if needed
-                pass
-        
-        return True
-    
-    def _add_to_history(self, alert: LoopAlert, action: Optional[str] = None):
+    def _add_to_history(self, alert: LoopAlert, action: Optional[str] = None) -> None:
         """Add notification to history"""
         with self._lock:
             history_entry = NotificationHistory(
@@ -514,22 +479,22 @@ class NotificationService:
         return ""
     
     # Configuration and management methods
-    def set_quiet_hours(self, start_hour: int, end_hour: int):
+    def set_quiet_hours(self, start_hour: int, end_hour: int) -> None:
         """Set quiet hours for notifications (24-hour format)"""
         self._quiet_hours_start = start_hour
         self._quiet_hours_end = end_hour
     
-    def enable_sound(self, enabled: bool):
+    def enable_sound(self, enabled: bool) -> None:
         """Enable or disable notification sounds"""
         self._sound_enabled = enabled
     
-    def snooze_alert(self, session_id: str, alert_type: str, minutes: int = 30):
+    def snooze_alert(self, session_id: str, alert_type: str, minutes: int = 30) -> None:
         """Snooze alerts for a specific session and alert type"""
         alert_key = f"{session_id}:{alert_type}"
         snooze_until = datetime.now() + timedelta(minutes=minutes)
         self._snoozed_alerts[alert_key] = snooze_until
     
-    def set_project_settings(self, project_path: str, settings: Dict[str, Any]):
+    def set_project_settings(self, project_path: str, settings: Dict[str, Any]) -> None:
         """Set notification settings for a specific project"""
         self._project_settings[project_path] = settings
     
@@ -538,7 +503,7 @@ class NotificationService:
         with self._lock:
             return self._notification_history[-limit:]
     
-    def clear_history(self):
+    def clear_history(self) -> None:
         """Clear notification history"""
         with self._lock:
             self._notification_history.clear()

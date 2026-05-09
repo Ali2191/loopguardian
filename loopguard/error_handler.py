@@ -95,7 +95,7 @@ class ErrorHandler:
         
         return logger
     
-    def _setup_recovery_actions(self):
+    def _setup_recovery_actions(self) -> None:
         """Setup automatic recovery actions for different error types"""
         self.recovery_actions = {
             ErrorCategory.FILE_SYSTEM: self._recover_file_system,
@@ -193,7 +193,7 @@ class ErrorHandler:
         # Low severity errors
         return ErrorSeverity.LOW
     
-    def _log_error(self, error: LoopGuardError, context: Dict[str, Any]):
+    def _log_error(self, error: LoopGuardError, context: Dict[str, Any]) -> None:
         """Log error with full context"""
         log_data = {
             'error_type': type(error.cause).__name__ if error.cause else 'LoopGuardError',
@@ -211,7 +211,7 @@ class ErrorHandler:
         else:
             self.logger.info(f"Info: {json.dumps(log_data, default=str)}")
     
-    def _update_error_tracking(self, error: LoopGuardError):
+    def _update_error_tracking(self, error: LoopGuardError) -> None:
         """Update error tracking for rate limiting and analysis"""
         error_key = f"{error.category.value}:{type(error.cause).__name__ if error.cause else 'LoopGuardError'}"
         
@@ -236,7 +236,7 @@ class ErrorHandler:
         
         return False
     
-    def _send_error_notification(self, error: LoopGuardError, context: Dict[str, Any]):
+    def _send_error_notification(self, error: LoopGuardError, context: Dict[str, Any]) -> None:
         """Send error notification if available"""
         if not self.notification_service:
             return
@@ -322,7 +322,7 @@ class ErrorHandler:
         
         # Schedule re-enable
         import threading
-        def reenable_notifications():
+        def reenable_notifications() -> None:
             import time
             time.sleep(600)  # 10 minutes
             self.fallback_modes[ErrorCategory.NOTIFICATION] = False
@@ -422,7 +422,7 @@ class ErrorHandler:
         
         return max(0, score)
     
-    def clear_error_history(self):
+    def clear_error_history(self) -> None:
         """Clear error history for fresh start"""
         self.error_counts.clear()
         self.last_errors.clear()
